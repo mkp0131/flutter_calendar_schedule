@@ -1,7 +1,13 @@
 import 'package:calendar_schedule/screen/home_screen.dart';
 import 'package:flutter/material.dart';
+// intl 패키지 import
+import 'package:intl/date_symbol_data_local.dart';
 
-void main() {
+void main() async {
+  // 플루터 init 기다리기
+  WidgetsFlutterBinding.ensureInitialized();
+  // 데이트 포멧 init
+  await initializeDateFormatting();
   runApp(const MyApp());
 }
 

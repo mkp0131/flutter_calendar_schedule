@@ -19,3 +19,201 @@
 dependency_overrides:
   path: ^1.8.2
 ```
+
+### [flutter] intl 다국어 패키지 사용법
+
+```dart
+// intl 패키지 import
+import 'package:intl/date_symbol_data_local.dart';
+
+void main() async {
+  // 플루터 init 기다리기
+  WidgetsFlutterBinding.ensureInitialized();
+  // 데이트 포멧 init
+  await initializeDateFormatting();
+  runApp(const MyApp());
+}
+```
+
+### [flutter] Column, Row 에서 아이템의 높이 / 넓이 만큼 안의 요소를 확장하는 법, IntrinsicHeight
+
+- `strech` 사용시 높이나 넓이를 구하지 못하는 경우가 있다.
+- `IntrinsicHeight` 를 사용
+
+```dart
+child: IntrinsicHeight(
+  child: Row(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '10:00',
+            style: timeTextStyle,
+          ),
+          Text(
+            '12:00',
+            style: timeTextStyle.copyWith(
+                fontSize: 12, fontWeight: FontWeight.w400),
+          ),
+        ],
+      ),
+      SizedBox(
+        width: 10,
+      ),
+      Expanded(
+        child: Container(
+          // color: Colors.grey,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),
+            child: Text('플루터 공부하기'),
+          ),
+        ),
+      ),
+      SizedBox(
+        width: 10,
+      ),
+      Container(
+        width: 20,
+        height: 20,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.black,
+        ),
+      ),
+    ],
+  ),
+),
+```
+
+### [flutter] ListView 실전 사용 (위, 아래 여백을 주는 방법)
+
+- 위, 아래 여백을 주는 방법
+
+```dart
+class ListViewWithAllSeparators<T> extends StatelessWidget {
+  const ListViewWithAllSeparators({Key key, this.items, this.itemBuilder}) : super(key: key);
+  final List<T> items;
+  final Widget Function(BuildContext context, T item) itemBuilder;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      itemCount: items.length + 2,
+      separatorBuilder: (_, __) => Divider(height: 0.5),
+      itemBuilder: (context, index) {
+        if (index == 0 || index == items.length + 1) {
+          return Container(); // zero height: not visible
+        }
+        return itemBuilder(context, items[index - 1]);
+      },
+    );
+  }
+}
+```
+
+[flutter] 플로팅 버튼, 떠있는 버튼 위젯 / FloatingActionButton
+
+```dart
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+      // Scaffold 위젯 아래에 삽입
+      floatingActionButton: renderFloatingActionButton(),
+
+// 플로팅 버튼 위젯 생성
+FloatingActionButton renderFloatingActionButton() {
+  return FloatingActionButton(
+    onPressed: () {
+      print('float');
+    },
+    child: Icon(Icons.add),
+    backgroundColor: Colors.black,
+  );
+}
+```
+
+### [flutter] 시스템 기본 UI가 차지하는 높이 구하기
+
+- `MediaQuery.of(context).viewInsets` 를 사용
+
+```dart
+// 기본 UI 가 차지하는 높이
+final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+```
+
+### [flutter] bottom 다이얼로그 아래 / showModalBottomSheet 기본 사용법
+
+```dart
+ onPressed: () {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled:
+          true, // 기본: false, 기본일 경우 최대 높이가 전체 높이의 50%, true 일 경우 전체 높이 100%
+      builder: (context) {
+        // 기본 UI 가 차지하는 높이
+        final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+        return Container(
+          // 디바이스 높이 / 2 + 기본 시스템 UI 높이
+          height: MediaQuery.of(context).size.height / 2 + bottomInset,
+          // 기본 시스템 UI 높이만큼 패딩 bottom 부여
+          child: Padding(
+            padding: EdgeInsets.only(bottom: bottomInset),
+            child: TextField(),
+          ),
+        );
+      },
+    );
+  },
+```
+
+### [flutter] TextField 기본 사용법
+
+- 부모 위젯에 onTap 으로 blur 이벤트를 넣어준다.
+
+```dart
+GestureDetector(
+  onTap: () {
+    // 포커스되어있는 텍스트필드 해제하기
+    FocusScope.of(context).requestFocus(FocusNode());
+  },
+```
+
+- 텍스트필드 위젯
+
+```dart
+TextField(
+    cursorColor: Colors.black, // 커서 색상
+    maxLines: null, // 줄수, null 부여시 텍스트가 줄바꿈이 될때마다 무한이 내려감.
+    keyboardType: TextInputType.number, // 키보드 타입을 선택 (기본: multiline)
+    expands: true, // 세로로 최대한 늘려줌.
+    inputFormatters: [
+      FilteringTextInputFormatter.digitsOnly, // 숫자만 입력되도록 설정
+    ],
+    decoration: InputDecoration(
+        border: InputBorder.none, // 아래 줄을 없앰
+        filled: true, // input 영역에 배경색
+        fillColor: Color(0xffeeeeee),
+    ),
+),
+```
+
+### [flutter] 한줄에 넘치는 아이템 배치 wrap
+
+```dart
+Wrap(
+    spacing: 8, // 가로 gap
+    runSpacing: 8, // 세로 gap
+    children: [
+      renderColor(color: Colors.red),
+      renderColor(color: Colors.orange),
+      renderColor(color: Colors.yellow),
+      renderColor(color: Colors.green),
+      renderColor(color: Colors.blue),
+      renderColor(color: Colors.indigo),
+      renderColor(color: Colors.purple),
+      renderColor(color: Colors.black),
+    ],
+  ),
+```
