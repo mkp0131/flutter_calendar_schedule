@@ -217,3 +217,22 @@ Wrap(
     ],
   ),
 ```
+
+[flutter] import, part 차이 / private 값 import
+
+- `import`: private 값은 불러올 수 없다.
+- `part`: private 값도 모두 불러온다.
+
+```dart
+// private 값은 불러올 수 없다.
+import 'package:drift/drift.dart';
+
+// private 값도 모두 불러온다.
+part 'drift_database.g.dart';
+```
+
+[flutter] flutter 코드 제너레이션 code generation 명령어
+
+```shell
+flutter pub run build_runner build
+```

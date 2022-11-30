@@ -1,13 +1,48 @@
+import 'package:calendar_schedule/database/drift_database.dart';
 import 'package:calendar_schedule/screen/home_screen.dart';
+import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 // intl 패키지 import
 import 'package:intl/date_symbol_data_local.dart';
+
+const DEFAULT_COLORS = [
+  // 빨강
+  'F44336',
+  // 주황
+  'FF9800',
+  // 노랑
+  'FFEB3B',
+  // 초록
+  'FCAF50',
+  // 파랑
+  '2196F3',
+  // 남
+  '3F51B5',
+  // 보라
+  '9C27B0',
+];
 
 void main() async {
   // 플루터 init 기다리기
   WidgetsFlutterBinding.ensureInitialized();
   // 데이트 포멧 init
   await initializeDateFormatting();
+
+  // 데이터 베이스 연결
+  final database = LocalDatabase();
+  final colors = await database.getCategoryColors();
+
+  if (colors.isEmpty) {
+    for (String hexCode in DEFAULT_COLORS) {
+      await database.createCategoryColor(CategoryColorsCompanion(
+        hexCode: Value(hexCode),
+      ));
+    }
+  }
+
+  print('--------------COlORS---------------');
+  print(await database.getCategoryColors());
+
   runApp(const MyApp());
 }
 
