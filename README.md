@@ -113,7 +113,7 @@ class ListViewWithAllSeparators<T> extends StatelessWidget {
 }
 ```
 
-[flutter] 플로팅 버튼, 떠있는 버튼 위젯 / FloatingActionButton
+### [flutter] 플로팅 버튼, 떠있는 버튼 위젯 / FloatingActionButton
 
 ```dart
 @override
@@ -218,7 +218,7 @@ Wrap(
   ),
 ```
 
-[flutter] import, part 차이 / private 값 import
+### [flutter] import, part 차이 / private 값 import
 
 - `import`: private 값은 불러올 수 없다.
 - `part`: private 값도 모두 불러온다.
@@ -231,8 +231,79 @@ import 'package:drift/drift.dart';
 part 'drift_database.g.dart';
 ```
 
-[flutter] flutter 코드 제너레이션 code generation 명령어
+### [flutter] flutter 코드 제너레이션 code generation 명령어
 
 ```shell
 flutter pub run build_runner build
+```
+
+### [flutter] TextField, TextFormField
+
+## TextField
+
+- 가장기본적인 텍스트 위젯
+- 폼과 같이 사용하는게 편하므로 거의 사용하지 않을듯.
+
+```dart
+TextField(
+  // onChaged 함수 값을 가져오는데 사용
+  onChanged: (value) {
+    print(value);
+  },
+  cursorColor: Colors.black, // 커서 색상
+  maxLines: isTxt! ? null : 1, // 줄수, null 부여시 텍스트가 줄바꿈이 될때마다 무한이 내려감.
+  expands: isTxt! ? true : false, // 세로로 최대한 늘려줌.
+  keyboardType: isTxt!
+      ? TextInputType.multiline
+      : TextInputType.number, // 키보드 타입을 선택 (기본: multiline)
+  inputFormatters: isTxt!
+      ? []
+      : [
+          FilteringTextInputFormatter.digitsOnly, // 숫자만 입력되도록 설정
+        ],
+  decoration: InputDecoration(
+    border: InputBorder.none, // 아래 줄을 없앰
+    filled: true, // input 영역에 배경색
+    fillColor: Color(0xffeeeeee),
+  ),
+);
+```
+
+## TextFormField
+
+- TextField 에서 추가적인 기능을 가지고 있는 위젯
+- Form 과 같이 사용하기위해서는 TextFormField 를 사용한다.
+- validator 라는 이벤트를 사용 할 수 있다.
+
+### Form
+
+- StateFull 로 위젯을 변경하고 Form 키를 생성한다.
+
+```dart
+class _BottomSheetComponentState extends State<BottomSheetComponent> {
+  // Form 에 넣을 키
+  final GlobalKey<FormState> formKey = GlobalKey();
+```
+
+- `TextFormField` 를 `Form` 으로 감싸준다.
+
+```dart
+  child: Form(
+    key: formKey,
+    child: Column(
+```
+
+### [flutter] 형변환 (타입 확인)
+
+- 타입 확인
+
+```dart
+print(time.runtimeType);
+```
+
+- String -> int
+
+```dart
+// 스트링을 int 로 변경
+int time = int.parse(value);
 ```

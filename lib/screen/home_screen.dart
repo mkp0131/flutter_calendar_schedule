@@ -1,3 +1,4 @@
+import 'package:calendar_schedule/component/bottom_sheet.dart';
 import 'package:calendar_schedule/component/calendar_componenet.dart';
 import 'package:calendar_schedule/component/custom_text_field.dart';
 import 'package:calendar_schedule/component/schedule_card.dart';
@@ -59,117 +60,12 @@ class _HomeScreenState extends State<HomeScreen> {
           isScrollControlled:
               true, // 기본: false, 기본일 경우 최대 높이가 전체 높이의 50%, true 일 경우 전체 높이 100%
           builder: (context) {
-            // 기본 UI 가 차지하는 높이
-            final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-            return GestureDetector(
-              onTap: () {
-                // 포커스되어있는 텍스트필드 해제하기
-                FocusScope.of(context).requestFocus(FocusNode());
-              },
-              child: SafeArea(
-                child: Container(
-                  color: Colors.white,
-                  // 디바이스 높이 / 2 + 기본 시스템 UI 높이
-                  height: MediaQuery.of(context).size.height / 2 + bottomInset,
-                  // 기본 시스템 UI 높이만큼 패딩 bottom 부여
-                  child: Padding(
-                    padding: EdgeInsets.only(bottom: bottomInset),
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                        bottom: 0,
-                        top: 20,
-                        left: 10,
-                        right: 10,
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: CustomTextField(label: '시작 시간'),
-                              ),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              Expanded(
-                                child: CustomTextField(label: '종료 시간'),
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Expanded(
-                            child: CustomTextField(
-                              label: '내용',
-                              isTxt: true,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          _ColorPicker(),
-                          SizedBox(
-                            height: 15,
-                          ),
-                          ElevatedButton(
-                            onPressed: () {},
-                            child: Text('저장'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: PRIMARY_COLOR,
-                              padding: EdgeInsets.all(15),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            );
+            return BottomSheetComponent();
           },
         );
       },
       child: Icon(Icons.add),
       backgroundColor: Colors.black,
-    );
-  }
-}
-
-class _ColorPicker extends StatelessWidget {
-  const _ColorPicker({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      // 한줄에 넘치는 아이템을 배치
-      child: Wrap(
-        spacing: 8, // 가로 gap
-        runSpacing: 8, // 세로 gap
-        children: [
-          renderColor(color: Colors.red),
-          renderColor(color: Colors.orange),
-          renderColor(color: Colors.yellow),
-          renderColor(color: Colors.green),
-          renderColor(color: Colors.blue),
-          renderColor(color: Colors.indigo),
-          renderColor(color: Colors.purple),
-          renderColor(color: Colors.black),
-        ],
-      ),
-    );
-  }
-
-  Widget renderColor({required Color color}) {
-    return Container(
-      width: 30,
-      height: 30,
-      decoration: BoxDecoration(
-        color: color,
-        shape: BoxShape.circle,
-      ),
     );
   }
 }
