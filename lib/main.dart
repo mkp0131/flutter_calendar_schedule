@@ -2,6 +2,7 @@ import 'package:calendar_schedule/database/drift_database.dart';
 import 'package:calendar_schedule/screen/home_screen.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 // intl 패키지 import
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -32,6 +33,9 @@ void main() async {
   final database = LocalDatabase();
   final colors = await database.getCategoryColors();
 
+  // 어디에서든 인스턴스를 사용할 수 있도록 GetIt에 저장
+  GetIt.I.registerSingleton<LocalDatabase>(database);
+
   if (colors.isEmpty) {
     for (String hexCode in DEFAULT_COLORS) {
       await database.createCategoryColor(CategoryColorsCompanion(
@@ -39,9 +43,6 @@ void main() async {
       ));
     }
   }
-
-  print('--------------COlORS---------------');
-  print(await database.getCategoryColors());
 
   runApp(const MyApp());
 }

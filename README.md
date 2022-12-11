@@ -307,3 +307,100 @@ print(time.runtimeType);
 // 스트링을 int 로 변경
 int time = int.parse(value);
 ```
+
+=======================================================
+
+
+### [flutter] GetIt 패키지 기본사용 (의존성 주입)
+
+- main() 함수에서 생성한 instance 를 저장하고 꺼내어 사용 할 수 있다.
+
+- 저장
+
+```dart
+void main() async {
+  // 플루터 init 기다리기
+  WidgetsFlutterBinding.ensureInitialized();
+  // 데이트 포멧 init
+  await initializeDateFormatting();
+
+  // 데이터 베이스 연결
+  final database = LocalDatabase();
+  final colors = await database.getCategoryColors();
+
+  // 어디에서든 인스턴스를 사용할 수 있도록 GetIt에 저장
+  GetIt.I.registerSingleton<LocalDatabase>(database);
+```
+
+- 사용
+
+```dart
+FutureBuilder(
+  // GetIt을 사용하여 인스턴스 사용
+  future: GetIt.I<LocalDatabase>().getCategoryColors(),
+  builder: (context, snapshot) {
+    if (!snapshot.hasData) {
+      return Center(child: CircularProgressIndicator());
+    } else {
+      return _ColorPicker(colors: []);
+    }
+  },
+),
+```
+
+### [flutter] color 스트링 합치는 법
+
+- 16진수로 합쳐준다.
+
+```dart
+return Color(int.parse(
+  'FF${e.hexCode}',
+  radix: 16,
+));
+```
+
+### [flutter] 외부에서 함수를 인자로 넣을시 type 문제 typedef
+
+- 해당하는 함수에 typedef 를 생성후 넣어준다.
+
+```dart
+typedef ColorIdSetter = void Function(int id);
+```
+
+### [flutter] UTC 시간 (Z) 
+
+- DateTime 형식의 데이터에서 마지막에 Z 가 붙으면 UTC 기준의 UTC 시간이다.
+- `DateTime.utc`를 사용하면 UTC 로 값을 생성 할 수 있다.
+
+```dart
+  DateTime selectedDay = DateTime.utc(
+    DateTime.now().year,
+    DateTime.now().month,
+    DateTime.now().day,
+  );
+```
+
+- 이미 저장되어있는 값은 `toUtc()` 로 utc 로 변환해준다.
+
+```dart
+final filterData = snapshot.data!
+                  .where((element) => element.date.toUtc() == selectedDay)
+                  .toList();
+```
+
+
+### [flutter] Dismissible 좌우 방향 스크롤 이벤트 위젯
+
+```dart
+// Dismissible 좌우방향으로 스크롤시 위젯을 없앤다.
+return Dismissible(
+    key: ObjectKey(
+        scheduleWithColor.schedule.id), // 유니크 ID를 넣어준다.
+    direction: DismissDirection.endToStart, // 스크롤 방향
+    onDismissed: (direction) {
+      GetIt.I<LocalDatabase>()
+          .removeSchedule(scheduleWithColor.schedule.id);
+    }, // 스크롤이 끝까지 되었을시 이벤트
+    child: ScheduleCard(
+      color: Color(int.parse(
+```

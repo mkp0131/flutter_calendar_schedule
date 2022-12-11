@@ -4,10 +4,14 @@ import 'package:flutter/services.dart';
 class CustomTextField extends StatelessWidget {
   final String label;
   bool? isTxt;
+  final FormFieldSetter onSaved;
+  final String initialValue;
 
   CustomTextField({
     required this.label,
+    required this.onSaved,
     this.isTxt,
+    required this.initialValue,
     Key? key,
   }) : super(key: key);
 
@@ -30,21 +34,20 @@ class CustomTextField extends StatelessWidget {
           height: 5,
         ),
         isTxt!
-            ? Expanded(child: renderTextField(
-                onSaved: (val) {
-                  print('텍스트');
-                },
+            ? Expanded(
+                child: renderTextField(
+                onSaved: onSaved,
+                initialValue: initialValue,
               ))
             : renderTextField(
-                onSaved: (val) {
-                  print('번호');
-                },
+                onSaved: onSaved,
+                initialValue: initialValue,
               ),
       ],
     );
   }
 
-  Widget renderTextField({required onSaved}) {
+  Widget renderTextField({required onSaved, required String initialValue}) {
     return TextFormField(
       // 값을 저장할때 사용하는 이벤트
       onSaved: onSaved,
@@ -70,12 +73,13 @@ class CustomTextField extends StatelessWidget {
 
         return null;
       },
-      autovalidateMode:
-          AutovalidateMode.always, // 모든 이벤트에 항상 validator 실행, 처음 init 시에도 자동실행
+      // autovalidateMode:
+      //     AutovalidateMode.always, // 모든 이벤트에 항상 validator 실행, 처음 init 시에도 자동실행
       // onChaged 함수 값을 가져오는데 사용
       onChanged: (value) {
         // print(value);
       },
+      initialValue: initialValue,
       cursorColor: Colors.black, // 커서 색상
       maxLines: isTxt! ? null : 1, // 줄수, null 부여시 텍스트가 줄바꿈이 될때마다 무한이 내려감.
       maxLength: 500, // 글자수 제한, 글자수 카운트 UI 도 같이 생성된다.
@@ -92,6 +96,7 @@ class CustomTextField extends StatelessWidget {
         border: InputBorder.none, // 아래 줄을 없앰
         filled: true, // input 영역에 배경색
         fillColor: Color(0xffeeeeee),
+        suffix: isTxt! ? null : Text('시'),
       ),
     );
   }

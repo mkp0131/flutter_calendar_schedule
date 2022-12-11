@@ -1,5 +1,8 @@
 import 'package:calendar_schedule/const/colors.dart';
+import 'package:calendar_schedule/database/drift_database.dart';
+import 'package:calendar_schedule/model/schedule_with_color.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 class TodayBanner extends StatelessWidget {
   DateTime selectedDay;
@@ -24,13 +27,23 @@ class TodayBanner extends StatelessWidget {
                 color: Colors.white,
               ),
             ),
-            Text(
-              '3개',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
+            StreamBuilder<List<ScheduleWithColor>>(
+                stream: GetIt.I<LocalDatabase>().watchSchedules(selectedDay),
+                builder: (context, snapshot) {
+                  int count = 0;
+
+                  if (snapshot.hasData) {
+                    count = snapshot.data!.length;
+                  }
+
+                  return Text(
+                    '$count개',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  );
+                }),
           ],
         ),
       ),

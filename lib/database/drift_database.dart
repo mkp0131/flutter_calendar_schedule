@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:calendar_schedule/model/schedule_with_color.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
@@ -24,6 +25,20 @@ class LocalDatabase extends _$LocalDatabase {
   Future<int> createSchedule(SchedulesCompanion data) =>
       into(schedules).insert(data);
 
+  // schedule row select
+  Future<Schedule> getSchedule(int id) =>
+      (select(schedules)..where((tbl) => tbl.id.equals(id))).getSingle();
+
+  // schedule row 삭제
+  Future<int> removeSchedule(int id) =>
+      (delete(schedules)..where((tbl) => tbl.id.equals(id))).go();
+
+  Future<int> updateSchedule(
+    int id,
+    SchedulesCompanion data,
+  ) =>
+      (update(schedules)..where((tbl) => tbl.id.equals(id))).write(data);
+
   // categoryColors 테이블에 데이터를 넣고, PRIMARY_KEY 를 return 받는다.
   Future<int> createCategoryColor(CategoryColorsCompanion data) =>
       into(categoryColors).insert(data);
@@ -31,6 +46,33 @@ class LocalDatabase extends _$LocalDatabase {
   // categoryColors 테이블 get
   Future<List<CategoryColor>> getCategoryColors() =>
       select(categoryColors).get();
+
+  // 지속적으로 업데이트된 schedule 보기
+  Stream<List<ScheduleWithColor>> watchSchedules(DateTime selectedDay) {
+    final query = select(schedules).join([
+      innerJoin(categoryColors, categoryColors.id.equalsExp(schedules.colorId))
+    ]);
+
+    query.where(schedules.date.equals(selectedDay));
+
+    query.orderBy([OrderingTerm.asc(schedules.startTime)]);
+
+    // ScheduleWithColor 타입으로 맵핑을 해야한다.
+    return query.watch().map(
+          (rows) => rows
+              .map(
+                (row) => ScheduleWithColor(
+                  schedule: row.readTable(schedules),
+                  categoryColor: row.readTable(categoryColors),
+                ),
+              )
+              .toList(),
+        );
+
+    // 축약을 이용해서 한줄로도 표현 가능
+    // return (select(schedules)..where((tbl) => tbl.date.equals(selectedDay)))
+    //     .watch();
+  }
 
   // 스키마 버전 정의
   @override
